@@ -49,6 +49,23 @@ the panel shows “任务已完成 / N seconds” → cancel any time with the b
     onlyOnSuccess: true   # do not shut down if any session errored
 ```
 
+## FAQ
+
+**Button still missing?** Fully quit the app (including the tray icon) and reopen it — the UI script is loaded when the host process starts, so refreshing the page is not enough.
+
+**`dsh plugin ... add github:...` hangs / `connection to github.com timed out`?** Point git at a local proxy:
+
+```sh
+git config --global http.https://github.com.proxy http://127.0.0.1:7897
+```
+
+**Want the original back?**
+
+```sh
+dsh plugin --profile desktop remove dsh-snowflake-shutdown
+dsh plugin --profile desktop add dsh-shutdown-after-task
+```
+
 ## License
 
 MIT, original copyright notices preserved — see [LICENSE](LICENSE).

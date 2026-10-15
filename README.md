@@ -109,6 +109,30 @@ dsh plugin --profile desktop remove dsh-snowflake-shutdown
 - 原 README 提到的参考项目：[yang040709/dsh-win-toast-notify](https://github.com/yang040709/dsh-win-toast-notify)、[keyiadiannao/dsh-power-button](https://github.com/keyiadiannao/dsh-power-button)（均为 MIT）
 - 桌面端注入通道的定位来自 DSH 自身源码：`@deepseek-ai/dsh-desktop-host`、`@deepseek-ai/dsh-host-webserver`、`@deepseek-ai/dsh-web-frontend`
 
+## 常见问题
+
+**装完按钮没出现？**
+必须**完全退出客户端（含系统托盘图标 → 退出）再打开**。界面脚本是宿主进程启动时载入内存的，注入表也在那一刻收集一次 —— 刷新页面（F5）拿到的还是旧内容，把窗口关到托盘不算重启。
+
+**`dsh plugin ... add github:...` 卡住或报 `connection to github.com timed out`？**
+这台机器直连 GitHub 不通，给 git 配一个本地代理即可（端口换成你自己的）：
+
+```sh
+git config --global http.https://github.com.proxy http://127.0.0.1:7897
+```
+
+配好后，插件市场里"从 GitHub 安装插件"也会一起恢复正常。
+
+**按钮和我别的插件弹窗重叠怎么办？**
+按钮会自动让开，弹窗消失后自动归位；也可以直接把按钮拖到自己喜欢的位置。
+
+**想换回原版？**
+
+```sh
+dsh plugin --profile desktop remove dsh-snowflake-shutdown
+dsh plugin --profile desktop add dsh-shutdown-after-task
+```
+
 ## License
 
 MIT —— 见 [LICENSE](LICENSE)，保留原项目的版权声明。
