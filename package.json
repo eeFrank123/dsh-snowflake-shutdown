@@ -1,6 +1,6 @@
 {
   "name": "dsh-snowflake-shutdown",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Shut down Windows after DeepSeek Harness tasks complete — snowflake button, desktop-safe UI injection, cancellable countdown. 任务完成后自动关机（雪花圆按钮 + 桌面版修复）。",
   "main": "index.js",
   "files": [

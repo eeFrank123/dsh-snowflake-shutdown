@@ -22,8 +22,9 @@ This fork registers the injection row itself, and tightens the UI while at it.
 2. **Snowflake circle button** — 32×32 round button with an inline SVG snowflake (follows state colour) instead of a ~150×34 text pill; grows 8% on hover; label moved to the tooltip.
 3. **Compact panel** — hugs its text (`width:max-content`, max 320px) instead of a fixed 300px black box, pinned to the bottom-right corner, automatically stacked above the button when they would overlap.
 4. **Renamed identity** — package name, `/api/dsh-snowflake-shutdown/*` routes, `~/.dsh/dsh-snowflake-shutdown.log`, `dsh-snow-*` classes, so it can coexist with the original.
+5. **No more bouncing button** — the dodge test now runs against the button's *unshifted* position (the original judged by the already-shifted rect, so stepping aside erased its own trigger: dodge → no overlap → restore → overlap, once per second). Full-window modals/backdrops no longer trigger a dodge either, which used to push the button off-screen.
 
-Trigger logic, success check, countdown and cancel behaviour are unchanged from the original.
+Trigger logic, success check, countdown and cancel behaviour are unchanged from the original; the auto-dodge logic also fixes the bouncing described in change 5.
 
 ## Install
 
@@ -57,6 +58,12 @@ the panel shows “任务已完成 / N seconds” → cancel any time with the b
 
 ```sh
 git config --global http.https://github.com.proxy http://127.0.0.1:7897
+```
+
+**Button bounces up and down while the host settings dialog is open?** Fixed in 0.3.1 (see change 5). Upgrade with:
+
+```sh
+dsh plugin --profile desktop add github:eeFrank123/dsh-snowflake-shutdown --config.minimumReleaseAge=0
 ```
 
 **Want the original back?**

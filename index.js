@@ -78,7 +78,7 @@ const UI_JS = `
   window.__dshSnowLoaded = true
   var BASE = '/api/dsh-snowflake-shutdown'
   var btn = null, banner = null, note = null, noteTimer = null
-  var suppressClick = false, dodging = false, drag = null, scanTimer = null
+  var suppressClick = false, dodging = false, dodgeOff = 0, drag = null, scanTimer = null
 
   function makeEl(tag, cls, text) {
     var e = document.createElement(tag)
@@ -209,10 +209,8 @@ const UI_JS = `
     var h = Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top))
     return w * h
   }
-  function findIntruder() {
-    if (!btn) return null
-    var r = btn.getBoundingClientRect()
-    if (r.width < 4 || r.height < 4) return null
+  function findIntruder(r) {
+    if (!btn || !r || r.width < 4 || r.height < 4) return null
     var pts = [
       [r.left + r.width / 2, r.top + r.height / 2],
       [r.left + 2, r.top + 2], [r.right - 2, r.top + 2],
@@ -231,22 +229,33 @@ const UI_JS = `
     }
     return null
   }
-  function undodge() {
-    if (dodging) { btn.style.transform = ''; dodging = false }
+  // The rect the button occupies with no dodge offset applied. Intruder tests
+  // must always run against this one, never the shifted rect: judging by the
+  // shifted rect lets the dodge erase its own trigger, so the button bounces
+  // (dodge -> nothing overlaps any more -> restore -> dodge -> ...).
+  function homeRect() {
+    var r = btn.getBoundingClientRect()
+    if (!dodgeOff) return r
+    return { left: r.left, right: r.right, top: r.top + dodgeOff, bottom: r.bottom + dodgeOff, width: r.width, height: r.height }
   }
+  function applyDodge(off) {
+    if (off === dodgeOff) return
+    dodgeOff = off
+    dodging = off > 0
+    btn.style.transform = off > 0 ? 'translateY(-' + off + 'px)' : ''
+  }
+  function undodge() { applyDodge(0) }
   function dodgeScan() {
     if (!btn || drag) return
-    var intr = findIntruder()
-    if (intr && !dodging) {
-      var br = btn.getBoundingClientRect()
-      var ir = intr.getBoundingClientRect()
-      var off = Math.max(0, br.bottom - ir.top) + 14
-      btn.style.transform = 'translateY(-' + off + 'px)'
-      dodging = true
-    } else if (!intr && dodging) {
-      btn.style.transform = ''
-      dodging = false
-    }
+    var home = homeRect()
+    var intr = findIntruder(home)
+    if (!intr) { applyDodge(0); return }
+    var ir = intr.getBoundingClientRect()
+    var want = Math.max(0, home.bottom - ir.top) + 14
+    var room = Math.max(0, home.top - 8)
+    // An intruder whose top edge is above the room we have (a modal backdrop
+    // covering the window) cannot be cleared by stepping aside: stay put.
+    applyDodge(want > 0 && want <= room ? want : 0)
   }
   try {
     var mo = new MutationObserver(function () {
