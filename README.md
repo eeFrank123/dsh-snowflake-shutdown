@@ -5,9 +5,9 @@
 
 跑长任务（批量迁移、模型生成、过夜任务）时，点一下右下角的雪花按钮，任务成功完成后电脑自动关机；倒计时期间可一键取消。
 
-![按钮三种状态](docs/preview-button.png)
+![按钮三种状态](https://cdn.jsdelivr.net/gh/eeFrank123/dsh-snowflake-shutdown@main/docs/preview-button.png)
 
-![提示面板](docs/preview-panel.png)
+![提示面板](https://cdn.jsdelivr.net/gh/eeFrank123/dsh-snowflake-shutdown@main/docs/preview-panel.png)
 
 ## 为什么会有这个分支
 
@@ -113,6 +113,13 @@ dsh plugin --profile desktop remove dsh-snowflake-shutdown
 
 **装完按钮没出现？**
 必须**完全退出客户端（含系统托盘图标 → 退出）再打开**。界面脚本是宿主进程启动时载入内存的，注入表也在那一刻收集一次 —— 刷新页面（F5）拿到的还是旧内容，把窗口关到托盘不算重启。
+
+**`dsh plugin ... add` 报 `lockfile entries failed verification` / `within the minimumReleaseAge cutoff`？**
+pnpm 11 默认带一条供应链策略：发布不满 24 小时的包会被拦下（本插件 0.3.0 刚发布时也会遇到）。等一天再装，或者这次先关掉这个检查：
+
+```sh
+dsh plugin --profile desktop add dsh-snowflake-shutdown --config.minimumReleaseAge=0
+```
 
 **`dsh plugin ... add github:...` 卡住或报 `connection to github.com timed out`？**
 这台机器直连 GitHub 不通，给 git 配一个本地代理即可（端口换成你自己的）：
